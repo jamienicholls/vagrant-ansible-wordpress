@@ -16,12 +16,8 @@ Vagrant.configure("2") do |config|
       end
       config.vm.synced_folder "./provisioning", "/home/vagrant/provisioning", create: false, type: "rsync", rsync__auto: true, rsync__args: ["--verbose", "--archive", "-z", "--copy-links"]
       server.vm.provision "ansible_local" do |ansible|
-        ansible.provisioning_path = "/home/vagrant/provisioning/"
-        #ansible.install_mode = "pip"
-        #ansible.pip_install_cmd = "sudo dnf install -y python3-pip && sudo ln -s -f /usr/bin/pip3 /usr/bin/pip"
-        #ansible.version = "2.7.13"
-        #ansible.compatibility_mode = "2.0"
-        ansible.extra_vars = { ansible_python_interpreter:"/usr/bin/python3" }
+          ansible.provisioning_path = "/home/vagrant/provisioning/"
+          ansible.extra_vars = { ansible_python_interpreter:"/usr/bin/python3" }
           ansible.playbook = "web.yml"
       end
   end
@@ -38,13 +34,8 @@ Vagrant.configure("2") do |config|
       end
       config.vm.synced_folder "./provisioning", "/home/vagrant/provisioning", create: false, type: "rsync", rsync__auto: true, rsync__args: ["--verbose", "--archive", "-z", "--copy-links"]
       server.vm.provision "ansible_local" do |ansible|
-        ansible.provisioning_path = "/home/vagrant/provisioning/"
-        # ansible.provisioning_path = "/home/vagrant/provisioning/"
-        #ansible.install_mode = "pip"
-        #ansible.pip_install_cmd = "sudo dnf install -y python3-pip && sudo ln -s -f /usr/bin/pip3 /usr/bin/pip"
-        #ansible.version = "2.7.13"
-        #ansible.compatibility_mode = "2.0"
-        ansible.extra_vars = { ansible_python_interpreter:"/usr/bin/python3" }
+          ansible.provisioning_path = "/home/vagrant/provisioning/"
+          ansible.extra_vars = { ansible_python_interpreter:"/usr/bin/python3" }
           ansible.playbook = "database.yml"
       end
   end
