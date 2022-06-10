@@ -1,8 +1,8 @@
-
-- name: Import remi GPG key
-  rpm_key:
-    key: http://rpms.remirepo.net/RPM-GPG-KEY-remi
-    state: present
+# Install Remi Repository
+# - name: Import remi GPG key
+#   rpm_key:
+#     key: http://rpms.remirepo.net/RPM-GPG-KEY-remi
+#     state: present
 
 - name: Import remi GPG key 2018
   rpm_key:
@@ -17,7 +17,8 @@
 - name: Enable PHP Remi Repository
   command: dnf module reset php -y
   command: dnf module enable php:remi-7.4 -y
- 
+
+# Install PHP (and extensions)
 - name: Install PHP Extensions
   yum: name={{ item }} update_cache=yes state=latest
   loop: "{{ php_modules }}"
@@ -29,15 +30,3 @@
 
 - name: Disable SELinux Without Reboot
   command: /sbin/setenforce 0
-
-# - name: Install PHP Remi Repository
-#   yum: name=http://rpms.remirepo.net/enterprise/remi-release-8.rpm update_cache=yes state=latest
-
-# - name: Import remi GPG key.
-#   rpm_key:
-#     key: "https://rpms.remirepo.net/RPM-GPG-KEY-remi2018"
-#     state: present
-# - name: Install remi repo.
-#   yum:
-#     name: "http://rpms.remirepo.net/enterprise/remi-release-8.rpm"
-#     state: present

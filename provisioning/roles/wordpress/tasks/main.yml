@@ -1,5 +1,4 @@
 # WordPress Configuration
- 
 - name: Download and unpack latest WordPress
   unarchive:
     src: https://wordpress.org/latest.tar.gz
