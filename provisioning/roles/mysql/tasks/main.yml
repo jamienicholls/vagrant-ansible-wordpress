@@ -1,33 +1,172 @@
+- name: install mariadb
+  yum:
+    name:
+      - mariadb-server
+      - python3-PyMySQL
+    state: latest
+
+- name: start mariadb
+  service:
+    name: mariadb
+    enabled: true
+    state: started
+
+- name: mysql_root_password
+  mysql_user:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    user: root
+    check_implicit_admin: true
+    password: "{{ mysql_root_password }}"
+    host: localhost
+
+- name: Creates database for WordPress
+  mysql_db:
+    name: "{{ mysql_db }}"
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+
+- name: Create MySQL user for WordPress
+  mysql_user:
+    name: "{{ mysql_user }}"
+    password: "{{ mysql_password }}"
+    priv: "{{ mysql_db }}.*:ALL,GRANT"
+    state: present
+    host: "{{ http_ip }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+
+- name: ensure mariadb binds to internal interface
+  template: >-
+    src=etc/my.cnf.d/mariadb-server.cnf
+    dest=/etc/my.cnf.d/mariadb-server.cnf
+    owner=root
+    group=root
+    mode=644
+  notify:
+      restart mariadb
+
+- name: Configure Firewall
+  firewalld: zone=public service=mysql permanent=yes state=enabled
+
+- name: Reload Firewall
+  systemd: name=firewalld state=reloaded
+# - name: remove remote root
+#   mysql_user:
+#     check_implicit_admin: true
+#     login_user: root
+#     login_password: "{{ mysql_root_password }}"
+#     user: root
+#     host: "{{ ansible_fqdn }}"
+#     state: absent
+
+# - name: ensure mariadb is installed
+#   yum: name={{ item }} update_cache=yes state=latest
+#   loop: [ 'mariadb-server', 'python3-PyMySQL' ]
+
+# - name: Place ~/.my.cnf
+#   template:
+#     src: .my.cnf.j2
+#     dest: "/root/.my.cnf"
+
+# - name: ensure mariadb binds to internal interface
+#   template: >-
+#     src=etc/my.cnf.d/mariadb-server.cnf
+#     dest=/etc/my.cnf.d/mariadb-server.cnf
+#     owner=root
+#     group=root
+#     mode=644
+#   notify:
+#       restart mariadb
+  
+
+
+# - name: Creates database for WordPress
+#   mysql_db:
+#     name: "{{ mysql_db }}"
+#     state: present
+#     login_user: root
+#     login_password: "{{ mysql_root_password }}"
+
+# - name: Create MySQL user for WordPress
+#   mysql_user:
+#     name: "{{ mysql_user }}"
+#     password: "{{ mysql_password }}"
+#     priv: "{{ mysql_db }}.*:ALL"
+#     state: present
+
+
+# - name: create user mysql wordpress
+#   mysql_user: name={{mysql_user}} host={{ item }} password={{mysql_password}} priv={{mysql_db}}.*:ALL,GRANT
+#   with_items:
+#     - localhost
+# - name: Creates database for WordPress
+#   mysql_db:
+#     name: "{{ mysql_db }}"
+#     state: present
+#     login_user: root
+#     login_password: "{{ mysql_root_password }}"
+  
 # MySQL Configuration
-    - name: Install MySQL Packages
-      yum: name={{ item }} update_cache=yes state=latest
-      loop: [ 'mysql-server', 'php-mysqlnd', 'python3-PyMySQL' ]
- 
-    - name: Start mysqld service
-      systemd: name=mysqld state=started enabled=yes
- 
-    - name: Set MySQL root Password
-      mysql_user:
-        login_host: 'localhost'
-        login_user: 'root'
-        login_password: ''
-        name: 'root'
-        password: '{{ mysql_root_password }}'
-        state: present
- 
-    - name: Creates database for WordPress
-      mysql_db:
-        name: "{{ mysql_db }}"
-        state: present
-        login_user: root
-        login_password: "{{ mysql_root_password }}"
- 
-    - name: Create MySQL user for WordPress
-      mysql_user:
-        login_host: '192.168.50.32'
-        name: "{{ mysql_user }}"
-        password: "{{ mysql_password }}"
-        priv: "{{ mysql_db }}.*:ALL"
-        state: present
-        login_user: root
-        login_password: "{{ mysql_root_password }}"
+# - name: ensure mariadb is installed
+#   yum: name={{ item }} update_cache=yes state=latest
+#   loop: [ 'mariadb-server', 'python3-PyMySQL' ]
+
+# - name: Install MySQL Packages
+#   yum: name={{ item }} update_cache=yes state=latest
+#   loop: [ 'mysql-server', 'php-mysqlnd', 'python3-PyMySQL' ]
+
+# - name: Start mysqld service
+#   systemd: name=mysqld state=started enabled=yes
+
+# - name: Set MySQL root Password
+#   mysql_user:
+#     login_host: 'localhost'
+#     login_user: 'root'
+#     login_password: ''
+#     name: 'root'
+#     password: '{{ mysql_root_password }}'
+#     state: present
+#############
+# - name: Place ~/.my.cnf
+#   template:
+#     src: .my.cnf.j2
+#     dest: "/etc/.my.cnf"
+
+# - name: ensure mariadb binds to internal interface
+#   template: >-
+#     src=etc/my.cnf.d/mariadb-server.cnf
+#     dest=/etc/my.cnf.d/mariadb-server.cnf
+#     owner=root
+#     group=root
+#     mode=644
+#   notify:
+#       restart mariadb
+
+# - name: Creates database for WordPress
+#   mysql_db:
+#     name: "{{ mysql_db }}"
+#     state: present
+#     login_user: root
+#     login_password: "{{ mysql_root_password }}"
+
+# - name: Create MySQL user for WordPress
+#   mysql_user:
+#     name: "{{ mysql_user }}"
+#     password: "{{ mysql_password }}"
+#     priv: "{{ mysql_db }}.*:ALL"
+#     state: present
+#     login_user: root
+#     login_password: "{{ mysql_root_password }}"
+
+# - name: Configure Firewall
+#   firewalld: zone=public service=mysql permanent=yes state=enabled
+
+# - name: Reload Firewall
+#   systemd: name=firewalld state=reloaded
+
+##### MANUAL
+#  mysql -u root -p
+#  Grant All Privileges ON *.* to 'wpuser'@'%' Identified By 'password';
+#  FLUSH PRIVILEGES;

@@ -19,3 +19,9 @@
     owner: root
     group: root
     mode: u=rw,g=r,o=r
+
+- name: Configure Firewall
+  firewalld: zone=public service=http permanent=yes state=enabled
+
+- name: Reload Firewall
+  systemd: name=firewalld state=reloaded
