@@ -7,6 +7,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "webapp1" do |server|
       server.vm.hostname = "webapp1"
       server.vm.network "private_network", ip: "192.168.50.30"
+      server.vm.network "forwarded_port", guest: 8080, host: 8080
       server.vm.provider "virtualbox" do |v|
           v.name = "webapp1"
           v.memory = 1024
